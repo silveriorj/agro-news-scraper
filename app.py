@@ -1,4 +1,3 @@
-from json.tool import main
 from pages.apublica import APublicaNews
 from pages.diplomatique import DiplomatiqueNews
 from pages.joioetrigo import JoioetrigoNews
@@ -18,19 +17,17 @@ news_websites = [
     ReporterBrasilNews, RuralistasNews, TerraSemMalesNews
 ]
 
+
 def start_crawler(topic):
     news = []
     for site in news_websites:
         try:
             logging.info(f'Starting {site.__name__}')
-            print(f'Starting {site.__name__}')
             info_site = site(topic)
             info_site.crawl()
             news += info_site.news
-        except Exception as e:
+        except Exception:
             logging.error(f'Error in {site.__name__}')
-            print(f'Error in {site.__name__}')
-            print(e)
 
     json_news = [news_object.dict() for news_object in news]
     df_news = pd.DataFrame(json_news)
