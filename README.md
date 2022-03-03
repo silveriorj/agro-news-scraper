@@ -9,5 +9,5 @@ pip install -r requirements.txt
 
 # Usage
 ```
-python3 agro-news-scraper.py -t TOPIC
+python3 app.py -t TOPIC
 ```
