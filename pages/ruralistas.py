@@ -5,9 +5,10 @@ from datetime import datetime
 import locale
 locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
-class APublicaNews:
-    title = 'APublica'
-    base_url = 'https://apublica.org/'
+
+class RuralistasNews:
+    title = 'Ruralistas'
+    base_url = 'https://deolhonosruralistas.com.br/'
 
     def __init__(self, keyword):
         self.url = self.base_url + '?s=' + keyword
@@ -16,13 +17,22 @@ class APublicaNews:
     def crawl(self):
         response = requests.get(self.url)
         soup = BeautifulSoup(response.text, 'html.parser')
-        results = soup.find_all('div', class_='row mb-5 brick-category-1')
+        results = soup.find_all('div', class_='news_box_container news_box_first row')
         for result in results:
+            title = result.find('h3', class_='post_title title').text
+            link = result.find('a', class_='news_box_link')['href']
+            content = result.find('p', class_='news_box_desc').text
+
+            news_content = requests.get(link)
+
+            soup = BeautifulSoup(news_content.text, 'html.parser')
+            date = soup.find('time', class_='entry-date').text
+
             news_object = self.remove_breakline_from_dict({
-                'title': result.find('h4', class_='card-title mb-2').text,
-                'link': result.find('a')['href'],
-                'content': result.find('p', class_='card-text summary d-none d-sm-block').text,
-                'date': self.format_date(result.find('span', class_='card-date').text)
+                'title': title,
+                'link': link,
+                'content': content,
+                'date': date
             })
             news_object['date'] = self.format_date(news_object['date'])
             self.news.append(News(**news_object))
@@ -33,8 +43,5 @@ class APublicaNews:
         return dictionary
 
     def format_date(self, date):
-        try:
-            date = datetime.strptime(date.capitalize(), '%d de %B de %Y')
-        except:
-            date = datetime.strptime(date.capitalize(), '%d/%m/%Y')
+        date = datetime.strptime(date.capitalize().strip(), '%d/%m/%Y')
         return date.strftime('%d/%m/%Y')

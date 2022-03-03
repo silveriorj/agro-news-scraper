@@ -14,8 +14,8 @@ import argparse
 
 news_websites = [
     APublicaNews, DiplomatiqueNews, JoioetrigoNews,
-    JornalistasLivresNews, PluralNews, # ReporterBrasilNews,
-    #RuralistasNews, TerraSemMalesNews
+    JornalistasLivresNews, PluralNews,
+    ReporterBrasilNews, RuralistasNews, TerraSemMalesNews
 ]
 
 def start_crawler(topic):
@@ -35,6 +35,7 @@ def start_crawler(topic):
     json_news = [news_object.dict() for news_object in news]
     df_news = pd.DataFrame(json_news)
     df_news.to_csv(f'news_{topic}.csv', index=False)
+    df_news.to_excel(f'news_{topic}.xlsx', index=False)
 
 
 if __name__ == '__main__':
